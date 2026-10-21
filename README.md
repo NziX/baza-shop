@@ -72,7 +72,7 @@ baza_shop/
 ### 2. Installation
 Clone or download this repository to your computer:
 ```bash
-git clone https://github.com/YOUR_USERNAME/baza-shop.git
+git clone https://github.com/NziX/baza-shop.git
 cd baza-shop
 ```
 
