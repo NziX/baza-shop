@@ -1,0 +1,27 @@
+# Python byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor files
+.vscode/
+.idea/
+
+# SQLite Database files (generated automatically by database.py / app.py)
+*.db
+*.sqlite3
+
+# Uploaded user images (keep folder via .gitkeep)
+static/uploads/*
+!static/uploads/.gitkeep

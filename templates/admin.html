@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baza Shop | Owner Control Panel</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            500: '#b88255',
+                            600: '#9e6741',
+                            700: '#7f4f34',
+                        },
+                        darkBg: '#0f1117',
+                        darkCard: '#151922',
+                        darkBorder: '#222834'
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-[#0c0e14] text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Admin Login Screen (Shown when not authenticated) -->
+    <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0a0c12]">
+        <div class="max-w-md w-full bg-[#131722] border border-slate-800 rounded-2xl p-8 shadow-2xl text-center">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-amber-700 flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-brand-500/20">
+                <i data-lucide="shield-check" class="w-7 h-7"></i>
+            </div>
+            <h2 class="font-display font-bold text-2xl text-white mb-1">Baza Shop Admin</h2>
+            <p class="text-xs text-slate-400 mb-6">Enter your security PIN to access the owner control panel</p>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Security PIN / Password</label>
+                    <div class="relative">
+                        <i data-lucide="key-round" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                        <input 
+                            type="password" 
+                            id="adminPinInput" 
+                            required 
+                            autofocus
+                            placeholder="Type admin123" 
+                            class="w-full bg-[#1a1f2e] border border-slate-700 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
+                        >
+                        <button type="button" onclick="togglePinVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition" title="Show/Hide Password">
+                            <i id="pinEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between text-[11px] mt-2">
+                        <span class="text-slate-400">
+                            Default: <button type="button" onclick="fillDefaultPin()" class="bg-amber-500/20 text-amber-300 font-bold px-1.5 py-0.5 rounded border border-amber-500/30 hover:bg-amber-500/40 transition cursor-pointer" title="Click to auto-fill">admin123</button>
+                        </span>
+                        <button type="button" onclick="openResetPasswordModal()" class="text-amber-400 hover:text-amber-300 font-semibold underline underline-offset-2 transition">
+                            Forgot PIN / Reset?
+                        </button>
+                    </div>
+                </div>
+
+                <div id="loginErrorMsg" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-lg"></div>
+
+                <button type="submit" id="loginBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-amber-600 hover:from-brand-400 hover:to-amber-500 text-white font-semibold text-xs shadow-lg shadow-brand-500/20 transition">
+                    Unlock Control Panel
+                </button>
+            </form>
+
+            <div class="mt-6 pt-6 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                <a href="/" class="hover:text-amber-400 transition flex items-center gap-1">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                    Back to Storefront
+                </a>
+                <span class="text-slate-600">Baza Shop v1.0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Main App (Visible after authentication) -->
+    <div id="adminApp" class="hidden flex-1 flex flex-col">
+        <!-- Top Admin Header -->
+        <header class="bg-[#121620] border-b border-slate-800 sticky top-0 z-30">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <!-- Brand Title -->
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center text-white font-bold">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="font-display font-bold text-base text-white flex items-center gap-2">
+                            <span>BAZA SHOP</span>
+                            <span class="text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-2 py-0.5 rounded-full border border-amber-500/30">Control Panel</span>
+                        </div>
+                        <span class="text-[11px] text-slate-400">Store Management & Analytics</span>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center gap-3 text-xs">
+                    <button onclick="openChangePasswordModal()" class="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 transition flex items-center gap-1.5 border border-amber-500/30 font-semibold shadow-sm" title="Change Admin Password">
+                        <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
+                        <span>Change Password</span>
+                    </button>
+                    <a href="/" target="_blank" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center gap-1.5 border border-slate-700">
+                        <i data-lucide="external-link" class="w-3.5 h-3.5 text-amber-400"></i>
+                        <span>View Live Store</span>
+                    </a>
+                    <button onclick="handleAdminLogout()" class="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 transition flex items-center gap-1.5 border border-rose-500/30">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                        <span>Log Out</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Navigation Bar -->
+            <div class="border-t border-slate-800/80 bg-[#0f121a] px-4 sm:px-8">
+                <nav class="flex space-x-6 overflow-x-auto text-xs font-semibold" aria-label="Tabs">
+                    <button onclick="switchTab('dashboard')" id="tabBtn-dashboard" class="admin-tab active-admin-tab py-3 border-b-2 flex items-center gap-2 transition">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                        <span>Overview</span>
+                    </button>
+                    <button onclick="switchTab('products')" id="tabBtn-products" class="admin-tab py-3 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition">
+                        <i data-lucide="package" class="w-4 h-4"></i>
+                        <span>Products</span>
+                    </button>
+                    <button onclick="switchTab('orders')" id="tabBtn-orders" class="admin-tab py-3 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition">
+                        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                        <span>Orders</span>
+                        <span id="pendingBadge" class="hidden bg-amber-500 text-stone-900 text-[10px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+                    </button>
+                    <button onclick="switchTab('coupons')" id="tabBtn-coupons" class="admin-tab py-3 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition">
+                        <i data-lucide="tag" class="w-4 h-4"></i>
+                        <span>Discount Coupons</span>
+                    </button>
+                    <button onclick="switchTab('settings')" id="tabBtn-settings" class="admin-tab py-3 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                        <span>Store Settings</span>
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Body Area -->
+        <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+            <!-- TAB 1: DASHBOARD OVERVIEW -->
+            <div id="tabContent-dashboard" class="space-y-8">
+                <!-- Metrics Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Revenue -->
+                    <div class="bg-[#151924] border border-slate-800 rounded-2xl p-5 shadow-lg">
+                        <div class="flex items-center justify-between text-slate-400 mb-3 text-xs">
+                            <span class="font-medium">Total Sales Revenue</span>
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                                <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <div id="metricRevenue" class="text-2xl font-extrabold text-white font-display">0 RWF</div>
+                        <div class="text-[11px] text-emerald-400 font-medium mt-1 flex items-center gap-1">
+                            <i data-lucide="trending-up" class="w-3 h-3"></i> Confirmed orders
+                        </div>
+                    </div>
+
+                    <!-- Orders -->
+                    <div class="bg-[#151924] border border-slate-800 rounded-2xl p-5 shadow-lg">
+                        <div class="flex items-center justify-between text-slate-400 mb-3 text-xs">
+                            <span class="font-medium">Total Orders</span>
+                            <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <div id="metricOrders" class="text-2xl font-extrabold text-white font-display">0</div>
+                        <div class="text-[11px] text-slate-400 mt-1">
+                            <span id="metricPendingOrders" class="text-amber-400 font-semibold">0</span> pending actions
+                        </div>
+                    </div>
+
+                    <!-- Products -->
+                    <div class="bg-[#151924] border border-slate-800 rounded-2xl p-5 shadow-lg">
+                        <div class="flex items-center justify-between text-slate-400 mb-3 text-xs">
+                            <span class="font-medium">Active Products</span>
+                            <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                                <i data-lucide="layers" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <div id="metricProducts" class="text-2xl font-extrabold text-white font-display">0</div>
+                        <div class="text-[11px] text-slate-400 mt-1">Ready in catalog</div>
+                    </div>
+
+                    <!-- Low Stock Alerts -->
+                    <div class="bg-[#151924] border border-slate-800 rounded-2xl p-5 shadow-lg">
+                        <div class="flex items-center justify-between text-slate-400 mb-3 text-xs">
+                            <span class="font-medium">Low Stock Alerts</span>
+                            <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                                <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <div id="metricLowStock" class="text-2xl font-extrabold text-white font-display">0</div>
+                        <div class="text-[11px] text-amber-400 mt-1">Items with &lt; 5 stock</div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders Preview -->
+                <div class="bg-[#151924] border border-slate-800 rounded-2xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="font-display font-bold text-base text-white">Recent Customer Orders</h3>
+                            <p class="text-xs text-slate-400">Latest orders submitted via Baza Shop</p>
+                        </div>
+                        <button onclick="switchTab('orders')" class="text-xs text-amber-400 hover:underline font-semibold flex items-center gap-1">
+                            <span>View All Orders</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-[#11141c] text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-slate-800">
+                                <tr>
+                                    <th class="py-3 px-4">Order Code</th>
+                                    <th class="py-3 px-4">Customer</th>
+                                    <th class="py-3 px-4">Phone / City</th>
+                                    <th class="py-3 px-4">Total</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboardRecentOrdersTable" class="divide-y divide-slate-800/60">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: PRODUCTS MANAGEMENT -->
+            <div id="tabContent-products" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-display font-bold text-xl text-white">Product Inventory</h3>
+                        <p class="text-xs text-slate-400">Add, edit, and organize lighting & decor products</p>
+                    </div>
+
+                    <button onclick="openProductEditor()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-amber-600 hover:from-brand-400 hover:to-amber-500 text-white font-semibold text-xs transition flex items-center gap-2 shadow-lg shadow-brand-500/20">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Add New Product</span>
+                    </button>
+                </div>
+
+                <!-- Products Table Card -->
+                <div class="bg-[#151924] border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+                    <!-- Filters bar -->
+                    <div class="p-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+                        <div class="flex items-center gap-2 flex-1 max-w-sm">
+                            <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+                            <input 
+                                type="text" 
+                                id="adminProductSearch" 
+                                placeholder="Search by name, category..." 
+                                oninput="filterAdminProducts()"
+                                class="w-full bg-[#1c2230] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
+                            >
+                        </div>
+                        <span id="adminProductCount" class="text-slate-400 text-xs">0 products listed</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-[#11141c] text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-slate-800">
+                                <tr>
+                                    <th class="py-3 px-4">Item</th>
+                                    <th class="py-3 px-4">Category</th>
+                                    <th class="py-3 px-4">Price</th>
+                                    <th class="py-3 px-4">Stock</th>
+                                    <th class="py-3 px-4">Badges</th>
+                                    <th class="py-3 px-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProductsTable" class="divide-y divide-slate-800/60">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: ORDERS MANAGEMENT -->
+            <div id="tabContent-orders" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-display font-bold text-xl text-white">Order Management</h3>
+                        <p class="text-xs text-slate-400">Update fulfillment statuses and review customer orders</p>
+                    </div>
+
+                    <!-- Status Filter Tabs -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto p-1 bg-[#151924] border border-slate-800 rounded-xl text-xs">
+                        <button onclick="filterAdminOrders('All')" class="order-filter-btn active-order-filter px-3 py-1.5 rounded-lg font-semibold transition">All</button>
+                        <button onclick="filterAdminOrders('pending')" class="order-filter-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">Pending</button>
+                        <button onclick="filterAdminOrders('processing')" class="order-filter-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">Processing</button>
+                        <button onclick="filterAdminOrders('shipped')" class="order-filter-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">Shipped</button>
+                        <button onclick="filterAdminOrders('delivered')" class="order-filter-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">Delivered</button>
+                        <button onclick="filterAdminOrders('cancelled')" class="order-filter-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">Cancelled</button>
+                    </div>
+                </div>
+
+                <!-- Orders Table Card -->
+                <div class="bg-[#151924] border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-[#11141c] text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-slate-800">
+                                <tr>
+                                    <th class="py-3 px-4">Code</th>
+                                    <th class="py-3 px-4">Customer Details</th>
+                                    <th class="py-3 px-4">Items</th>
+                                    <th class="py-3 px-4">Total Amount</th>
+                                    <th class="py-3 px-4">Status & Action</th>
+                                    <th class="py-3 px-4 text-right">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminOrdersTable" class="divide-y divide-slate-800/60">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: COUPONS & DISCOUNTS -->
+            <div id="tabContent-coupons" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-display font-bold text-xl text-white">Discount & Promo Codes</h3>
+                        <p class="text-xs text-slate-400">Offer percentage savings to your Instagram & online customers</p>
+                    </div>
+
+                    <button onclick="openCouponModal()" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-white font-semibold text-xs transition flex items-center gap-1.5">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Create New Promo Code</span>
+                    </button>
+                </div>
+
+                <div class="bg-[#151924] border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-[#11141c] text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-slate-800">
+                                <tr>
+                                    <th class="py-3 px-4">Code</th>
+                                    <th class="py-3 px-4">Discount</th>
+                                    <th class="py-3 px-4">Min Order Amount</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminCouponsTable" class="divide-y divide-slate-800/60">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: SETTINGS -->
+            <div id="tabContent-settings" class="hidden space-y-6">
+                <div>
+                    <h3 class="font-display font-bold text-xl text-white">Store Settings</h3>
+                    <p class="text-xs text-slate-400">Configure your Instagram handle, WhatsApp order receiving number, and delivery rules</p>
+                </div>
+
+                <div class="bg-[#151924] border border-slate-800 rounded-2xl p-6 sm:p-8 max-w-3xl shadow-lg">
+                    <form onsubmit="handleSaveSettings(event)" class="space-y-5 text-xs">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">Store Name</label>
+                                <input type="text" id="settingStoreName" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-brand-500">
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">Currency Symbol</label>
+                                <input type="text" id="settingCurrency" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-brand-500">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">Instagram Handle</label>
+                                <div class="relative">
+                                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">@</span>
+                                    <input type="text" id="settingInstagram" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl pl-8 pr-3.5 py-2 text-white focus:outline-none focus:border-brand-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">WhatsApp Order Number</label>
+                                <input type="text" id="settingWhatsApp" placeholder="e.g. +250 788 123 456" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-brand-500">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">Standard Delivery Fee (RWF)</label>
+                                <input type="number" step="100" id="settingDeliveryFee" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-brand-500">
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">Free Shipping Order Threshold (RWF)</label>
+                                <input type="number" step="500" id="settingFreeShipping" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-brand-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 font-semibold mb-1">Top Announcement Bar Text</label>
+                            <textarea id="settingAnnouncement" rows="2" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-brand-500"></textarea>
+                        </div>
+
+                        <!-- Dedicated Security Card inside Store Settings -->
+                        <div class="pt-5 border-t border-slate-800">
+                            <div class="p-4 bg-[#1b2130] rounded-xl border border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div class="space-y-0.5">
+                                    <div class="flex items-center gap-2 text-white font-bold text-sm">
+                                        <i data-lucide="shield-check" class="w-4 h-4 text-amber-400"></i>
+                                        <span>Control Panel Security & Access</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400">Current Login PIN is active. Click below to update your password securely.</p>
+                                </div>
+                                <button type="button" onclick="openChangePasswordModal()" class="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition flex items-center gap-1.5 shrink-0">
+                                    <i data-lucide="key-round" class="w-4 h-4"></i>
+                                    <span>Change Password</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">Store Admin PIN</label>
+                                <input type="text" id="settingAdminPin" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-brand-500">
+                                <span class="text-[11px] text-slate-500 block mt-1">Can also be edited directly here.</span>
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">Master Recovery Key</label>
+                                <input type="text" id="settingRecoveryKey" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-brand-500 font-mono">
+                                <span class="text-[11px] text-slate-500 block mt-1">Emergency recovery phrase if you forget PIN.</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-amber-600 hover:from-brand-400 hover:to-amber-500 text-white font-semibold text-xs shadow-lg shadow-brand-500/20 transition">
+                            Save Store Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== ADMIN MODALS ==================== -->
+
+    <!-- Product Editor Modal (Add/Edit) -->
+    <div id="productEditorModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-[#141824] border border-slate-700 rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative my-6">
+            <button onclick="closeProductEditor()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <h3 id="productEditorTitle" class="font-display font-bold text-xl text-white mb-1">Add Product</h3>
+            <p class="text-xs text-slate-400 mb-6">Enter specifications and details for the product</p>
+
+            <form onsubmit="handleSaveProduct(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="editProductId">
+
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Product Title *</label>
+                    <input type="text" id="prodName" required placeholder="e.g. Modern Ambient Lamp" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1">Category *</label>
+                        <select id="prodCategory" required class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-brand-500">
+                            <option value="Chandeliers">Chandeliers</option>
+                            <option value="Floor Lamps">Floor Lamps</option>
+                            <option value="Pendant Lights">Pendant Lights</option>
+                            <option value="Table Lamps">Table Lamps</option>
+                            <option value="Decor Lighting">Decor Lighting</option>
+                            <option value="Home Decor">Home Decor</option>
+                            <option value="Accessories">Accessories</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1">Selling Price (RWF) *</label>
+                        <input type="number" step="100" id="prodPrice" required placeholder="89000" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1">Compare-at Price (RWF)</label>
+                        <input type="number" step="100" id="prodComparePrice" placeholder="119000" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1">Stock Quantity *</label>
+                        <input type="number" id="prodStock" required placeholder="15" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1">Stock Status</label>
+                        <div class="p-2.5 bg-[#181d28] border border-slate-700/60 rounded-xl text-xs text-slate-300 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <span>Active in Catalog</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Primary Photo Selector from Device (NO URL REQUIRED) -->
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1.5 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5">
+                            <i data-lucide="image" class="w-4 h-4 text-amber-400"></i>
+                            <span>Product Photo</span>
+                        </span>
+                        <span class="text-[11px] text-amber-400 font-medium">Select or drop photo from this PC</span>
+                    </label>
+
+                    <!-- Hidden file picker and hidden URL value (Auto-filled by photo picker) -->
+                    <input type="file" id="prodFileInput" accept="image/*" class="hidden">
+                    <input type="hidden" id="prodImageUrl">
+
+                    <!-- Interactive Photo Box -->
+                    <div 
+                        id="dropZone" 
+                        onclick="triggerFileInput()"
+                        class="border-2 border-dashed border-slate-700 hover:border-amber-400 bg-[#171b26] hover:bg-[#1a202d] rounded-2xl p-6 text-center cursor-pointer transition-all duration-200 group"
+                    >
+                        <!-- Prompt / Empty State -->
+                        <div id="dropPrompt" class="flex flex-col items-center justify-center py-3">
+                            <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-amber-500/20 transition duration-300 shadow-inner">
+                                <i data-lucide="image-plus" class="w-7 h-7"></i>
+                            </div>
+                            <div class="text-sm font-bold text-white mb-1">
+                                Drop your product photo here
+                            </div>
+                            <p class="text-xs text-slate-400 mb-3">or click anywhere to browse photos on your computer</p>
+                            <button type="button" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-amber-600 group-hover:from-brand-400 group-hover:to-amber-500 text-white text-xs font-bold shadow-md transition pointer-events-none">
+                                <i data-lucide="folder-open" class="w-4 h-4"></i>
+                                <span>Choose Photo from Device</span>
+                            </button>
+                        </div>
+
+                        <!-- Selected Photo Preview State -->
+                        <div id="dropPreviewContainer" class="hidden flex items-center gap-4 text-left">
+                            <div class="relative w-24 h-24 rounded-xl overflow-hidden border border-slate-700 bg-black/60 shrink-0 shadow-lg">
+                                <img id="dropPreviewImg" src="" alt="Selected Product Photo" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 min-w-0 space-y-1">
+                                <div id="uploadStatusBadge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Photo Attached
+                                </div>
+                                <p id="uploadFileName" class="text-xs font-bold text-white truncate"></p>
+                                <p class="text-[11px] text-slate-400">Click or drop a different photo to replace</p>
+                            </div>
+                            <button type="button" onclick="clearUploadedImage(event)" class="p-2.5 text-slate-400 hover:text-rose-400 transition rounded-xl hover:bg-slate-800" title="Remove Photo">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <!-- Uploading / Processing state -->
+                        <div id="dropUploading" class="hidden flex flex-col items-center justify-center py-4">
+                            <i data-lucide="loader-2" class="w-8 h-8 text-amber-400 animate-spin mb-2"></i>
+                            <span class="text-xs font-semibold text-amber-300">Attaching photo from device...</span>
+                        </div>
+                    </div>
+
+                    <!-- Optional Web Link Fallback (Collapsed by default) -->
+                    <div class="pt-1.5 flex items-center justify-between text-[11px]">
+                        <span class="text-slate-500">Supports JPG, PNG, WEBP from your PC</span>
+                        <button type="button" onclick="toggleUrlField()" class="text-slate-400 hover:text-amber-300 transition flex items-center gap-1">
+                            <i data-lucide="link" class="w-3 h-3"></i>
+                            <span id="urlToggleLabel">Or use an image web link</span>
+                        </button>
+                    </div>
+                    <div id="urlFieldContainer" class="hidden pt-2">
+                        <input 
+                            type="url" 
+                            id="prodImageUrlManual" 
+                            oninput="handleManualUrlInput(this.value)"
+                            placeholder="https://images.unsplash.com/... (optional)" 
+                            class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-brand-500 text-xs"
+                        >
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Description</label>
+                    <textarea id="prodDesc" rows="3" placeholder="Describe the design, lighting warmth, and materials..." class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-brand-500"></textarea>
+                </div>
+
+                <!-- Badges -->
+                <div class="flex items-center gap-6 pt-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="prodIsFeatured" class="rounded text-brand-500 focus:ring-0">
+                        <span class="text-slate-300">Feature on Homepage</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="prodIsTrending" class="rounded text-brand-500 focus:ring-0">
+                        <span class="text-slate-300">Mark as Trending</span>
+                    </label>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeProductEditor()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-white font-semibold transition">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="orderDetailModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-[#141824] border border-slate-700 rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative my-6">
+            <button onclick="closeOrderDetailModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <span id="detailOrderCode" class="font-mono text-base font-bold text-amber-400">BZ-00000</span>
+                    <span id="detailOrderStatus" class="ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold"></span>
+                </div>
+                <span id="detailOrderDate" class="text-xs text-slate-400"></span>
+            </div>
+
+            <div class="space-y-4 text-xs">
+                <!-- Customer Box -->
+                <div class="bg-[#1b2130] p-4 rounded-xl border border-slate-800 space-y-1.5">
+                    <div class="font-semibold text-white text-sm" id="detailCustomerName"></div>
+                    <div class="text-slate-300 flex items-center gap-1.5">
+                        <i data-lucide="phone" class="w-3.5 h-3.5 text-amber-400"></i>
+                        <span id="detailCustomerPhone"></span>
+                    </div>
+                    <div class="text-slate-300 flex items-center gap-1.5">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-amber-400"></i>
+                        <span id="detailCustomerAddress"></span>
+                    </div>
+                    <div id="detailNotesContainer" class="hidden text-amber-300/80 pt-1 text-[11px] italic"></div>
+                </div>
+
+                <!-- Items list -->
+                <div>
+                    <h5 class="font-semibold text-slate-300 mb-2">Order Items:</h5>
+                    <div id="detailOrderItems" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- Financials -->
+                <div class="bg-[#1b2130] p-4 rounded-xl border border-slate-800 space-y-1">
+                    <div class="flex justify-between text-slate-400">
+                        <span>Subtotal:</span>
+                        <span id="detailSubtotal" class="text-white">0 RWF</span>
+                    </div>
+                    <div class="flex justify-between text-slate-400">
+                        <span>Discount:</span>
+                        <span id="detailDiscount" class="text-emerald-400">-0 RWF</span>
+                    </div>
+                    <div class="flex justify-between text-slate-400">
+                        <span>Shipping Fee:</span>
+                        <span id="detailShipping" class="text-white">0 RWF</span>
+                    </div>
+                    <div class="flex justify-between text-sm font-bold text-white pt-2 border-t border-slate-700">
+                        <span>Total:</span>
+                        <span id="detailTotal" class="text-amber-400 text-base">0 RWF</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coupon Modal -->
+    <div id="couponModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-[#141824] border border-slate-700 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative">
+            <button onclick="closeCouponModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <h3 class="font-display font-bold text-lg text-white mb-1">Create Promo Code</h3>
+            <p class="text-xs text-slate-400 mb-4">Set up a discount coupon for customers</p>
+
+            <form onsubmit="handleCreateCoupon(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Coupon Code *</label>
+                    <input type="text" id="newCouponCode" required placeholder="e.g. FLASH20" class="uppercase w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500 font-mono">
+                </div>
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Discount Percentage (%) *</label>
+                    <input type="number" id="newCouponPercent" required placeholder="15" min="1" max="90" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Minimum Order (RWF)</label>
+                    <input type="number" id="newCouponMin" placeholder="50000" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-500">
+                </div>
+
+                <div class="pt-3">
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-white font-semibold transition">
+                        Create Coupon
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div id="resetPasswordModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="max-w-md w-full bg-[#131722] border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-2xl relative text-left">
+            <button onclick="closeResetPasswordModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-3">
+                <i data-lucide="key-round" class="w-6 h-6"></i>
+            </div>
+            
+            <h3 class="font-display font-bold text-xl text-white mb-1">Reset Owner Password</h3>
+            <p class="text-xs text-slate-400 mb-5">Enter your Master Recovery Key to set a new password/PIN for your store.</p>
+
+            <form onsubmit="handleResetPassword(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Master Recovery Key *</label>
+                    <input 
+                        type="text" 
+                        id="resetRecoveryKey" 
+                        required 
+                        placeholder="e.g. BAZA-RESET-2026" 
+                        class="w-full bg-[#1a1f2e] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 font-mono text-xs"
+                    >
+                    <p class="text-[11px] text-slate-500 mt-1">Default master key is <code class="text-amber-400 font-mono">BAZA-RESET-2026</code></p>
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">New Password / PIN *</label>
+                    <input 
+                        type="password" 
+                        id="resetNewPin" 
+                        required 
+                        placeholder="Enter new password (min 3 chars)" 
+                        class="w-full bg-[#1a1f2e] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-xs"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Confirm New Password / PIN *</label>
+                    <input 
+                        type="password" 
+                        id="resetConfirmPin" 
+                        required 
+                        placeholder="Re-enter new password" 
+                        class="w-full bg-[#1a1f2e] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-xs"
+                    >
+                </div>
+
+                <div id="resetErrorMsg" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-lg"></div>
+                <div id="resetSuccessMsg" class="hidden text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-lg"></div>
+
+                <div class="pt-2">
+                    <button type="submit" id="resetSubmitBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-amber-600 hover:from-brand-400 hover:to-amber-500 text-white font-semibold text-xs shadow-lg shadow-brand-500/20 transition">
+                        Save New Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Password Modal (Accessed from inside the control panel) -->
+    <div id="changePasswordModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="max-w-md w-full bg-[#131722] border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-2xl relative text-left">
+            <button onclick="closeChangePasswordModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="w-12 h-12 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center mb-3">
+                <i data-lucide="lock" class="w-6 h-6"></i>
+            </div>
+            
+            <h3 class="font-display font-bold text-xl text-white mb-1">Change Admin Password</h3>
+            <p class="text-xs text-slate-400 mb-5">Update your control panel access PIN / password.</p>
+
+            <form onsubmit="handleChangePassword(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Current Password / PIN *</label>
+                    <input 
+                        type="password" 
+                        id="changeCurrentPin" 
+                        required 
+                        placeholder="Enter your current password" 
+                        class="w-full bg-[#1a1f2e] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-xs"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">New Password / PIN *</label>
+                    <input 
+                        type="password" 
+                        id="changeNewPin" 
+                        required 
+                        placeholder="Enter new password (min 3 chars)" 
+                        class="w-full bg-[#1a1f2e] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-xs"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Confirm New Password / PIN *</label>
+                    <input 
+                        type="password" 
+                        id="changeConfirmPin" 
+                        required 
+                        placeholder="Re-type new password" 
+                        class="w-full bg-[#1a1f2e] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-xs"
+                    >
+                </div>
+
+                <div id="changeErrorMsg" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-lg"></div>
+                <div id="changeSuccessMsg" class="hidden text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-lg"></div>
+
+                <div class="pt-2">
+                    <button type="submit" id="changeSubmitBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-amber-600 hover:from-brand-400 hover:to-amber-500 text-white font-semibold text-xs shadow-lg shadow-brand-500/20 transition">
+                        Update Password Now
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Toast -->
+    <div id="adminToast" class="fixed bottom-6 right-6 z-50 hidden bg-[#1b2130] text-white border border-slate-700 shadow-2xl rounded-xl px-4 py-3 flex items-center gap-3 transition">
+        <i data-lucide="info" class="w-4 h-4 text-amber-400"></i>
+        <span id="adminToastMsg" class="text-xs font-medium"></span>
+    </div>
+
+    <script src="/static/js/admin.js"></script>
+</body>
+</html>

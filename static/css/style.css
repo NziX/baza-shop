@@ -1,0 +1,105 @@
+/* Custom Styles for Baza Shop */
+
+@layer utilities {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+}
+
+/* Category Pill active styling */
+.category-pill {
+    background-color: #161a22;
+    color: #94a3b8;
+    border: 1px solid #232834;
+    transition: all 0.2s ease;
+}
+
+.category-pill:hover {
+    color: #ffffff;
+    border-color: #475569;
+    background-color: #1e2430;
+}
+
+.category-pill.active-pill {
+    background: linear-gradient(135deg, #b88255 0%, #9e6741 100%);
+    color: #ffffff;
+    border-color: #cfa37a;
+    box-shadow: 0 4px 14px rgba(184, 130, 85, 0.25);
+}
+
+/* Admin Tabs */
+.admin-tab {
+    position: relative;
+}
+
+.admin-tab.active-admin-tab {
+    color: #f59e0b;
+    border-color: #f59e0b;
+}
+
+/* Order Filter buttons */
+.order-filter-btn.active-order-filter {
+    background-color: #b88255;
+    color: #ffffff;
+}
+
+/* Glassmorphism elements */
+.glass-panel {
+    background: rgba(21, 25, 34, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Ambient glow subtle animation */
+@keyframes ambientGlow {
+    0%, 100% {
+        opacity: 0.15;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.25;
+        transform: scale(1.05);
+    }
+}
+
+.ambient-pulse {
+    animation: ambientGlow 8s ease-in-out infinite;
+}
+
+/* Status Badges */
+.badge-pending {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-processing {
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.badge-shipped {
+    background-color: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.badge-delivered {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-cancelled {
+    background-color: rgba(244, 63, 94, 0.15);
+    color: #fb7185;
+    border: 1px solid rgba(244, 63, 94, 0.3);
+}
