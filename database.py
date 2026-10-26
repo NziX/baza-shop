@@ -45,7 +45,7 @@ def init_db():
         address TEXT NOT NULL,
         city TEXT NOT NULL,
         notes TEXT,
-        payment_method TEXT NOT NULL DEFAULT 'cod',
+        payment_method TEXT NOT NULL DEFAULT 'momo',
         subtotal REAL NOT NULL,
         discount REAL DEFAULT 0,
         shipping_fee REAL DEFAULT 0,

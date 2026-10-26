@@ -833,6 +833,16 @@ function filterAdminOrders(status) {
     loadAdminOrders();
 }
 
+function formatPaymentBadge(method) {
+    if (!method) return '<span class="text-slate-400 text-[10px]">MTN MOMO</span>';
+    const m = method.toLowerCase();
+    if (m === 'momo' || m.includes('mtn')) return '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30">MTN MoMo</span>';
+    if (m === 'airtel') return '<span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-bold border border-rose-500/30">Airtel Money</span>';
+    if (m === 'bank') return '<span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-bold border border-blue-500/30">Bank Transfer</span>';
+    if (m === 'cod') return '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">Cash</span>';
+    return `<span class="px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 text-[10px] font-semibold">${method.toUpperCase()}</span>`;
+}
+
 function renderAdminOrders(orders) {
     const table = document.getElementById('adminOrdersTable');
     if (!orders || orders.length === 0) {
@@ -856,7 +866,7 @@ function renderAdminOrders(orders) {
             </td>
             <td class="py-3 px-4">
                 <div class="font-extrabold text-white text-sm">${fmtA(o.total)}</div>
-                <div class="text-[10px] text-slate-400 uppercase">${o.payment_method}</div>
+                <div class="mt-1">${formatPaymentBadge(o.payment_method)}</div>
             </td>
             <td class="py-3 px-4">
                 <!-- Status Change Selector -->
@@ -933,6 +943,17 @@ function viewOrderDetail(orderId) {
             <div class="font-bold text-amber-300 text-xs">${fmtA(it.subtotal)}</div>
         </div>
     `).join('');
+
+    const pmEl = document.getElementById('detailPaymentMethod');
+    if (pmEl) {
+        const m = (o.payment_method || '').toLowerCase();
+        let label = 'MTN Mobile Money';
+        if (m === 'airtel') label = 'Airtel Money';
+        else if (m === 'bank') label = 'Bank Transfer';
+        else if (m === 'cod') label = 'Cash on Delivery';
+        else if (m === 'card') label = 'Card / Online';
+        pmEl.textContent = label;
+    }
 
     document.getElementById('detailSubtotal').textContent = fmtA(o.subtotal);
     document.getElementById('detailDiscount').textContent = `-${fmtA(o.discount || 0)}`;

@@ -233,7 +233,7 @@ def create_order():
     address = data.get("address", "").strip()
     city = data.get("city", "").strip()
     notes = data.get("notes", "").strip()
-    payment_method = data.get("payment_method", "cod")
+    payment_method = data.get("payment_method", "momo")
     coupon_code = data.get("coupon_code", "").strip().upper()
 
     if not customer_name or not customer_phone or not address or not city:
@@ -311,10 +311,20 @@ def create_order():
     conn.commit()
     conn.close()
 
+    # Payment method readable label
+    payment_labels = {
+        "momo": "MTN Mobile Money",
+        "airtel": "Airtel Money",
+        "bank": "Bank Transfer",
+        "cod": "Cash on Delivery",
+        "card": "Card / Online"
+    }
+    payment_label = payment_labels.get(payment_method.lower(), payment_method)
+
     # Build WhatsApp message link for owner/customer direct confirmation
     whatsapp_num = get_setting("whatsapp_number", "").replace("+", "").replace(" ", "").replace("-", "")
     items_summary = "%0A".join([f"• {it['quantity']}x {it['name']} ({format_currency(it['subtotal'])})" for it in verified_items])
-    wa_text = f"✨ *New Order from Baza Shop!*%0A*Order Code:* {order_code}%0A*Customer:* {customer_name}%0A*Phone:* {customer_phone}%0A*Address:* {address}, {city}%0A*Total:* {format_currency(total)}%0A%0A*Items:*%0A{items_summary}"
+    wa_text = f"✨ *New Order from Baza Shop!*%0A*Order Code:* {order_code}%0A*Customer:* {customer_name}%0A*Phone:* {customer_phone}%0A*Address:* {address}, {city}%0A*Payment Method:* {payment_label}%0A*Total:* {format_currency(total)}%0A%0A*Items:*%0A{items_summary}"
     whatsapp_link = f"https://wa.me/{whatsapp_num}?text={wa_text}" if whatsapp_num else ""
 
     return jsonify({
@@ -324,6 +334,7 @@ def create_order():
         "subtotal": subtotal,
         "discount": discount,
         "shipping_fee": delivery_fee,
+        "payment_method": payment_label,
         "whatsapp_link": whatsapp_link,
         "message": f"Order {order_code} placed successfully! Thank you for shopping with Baza Shop."
     })

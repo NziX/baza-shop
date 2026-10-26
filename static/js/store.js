@@ -701,6 +701,57 @@ function closeCheckoutModal() {
     document.body.classList.remove('overflow-hidden');
 }
 
+function updatePaymentSelection(val) {
+    const labels = {
+        momo: document.getElementById('paymentLabel_momo'),
+        airtel: document.getElementById('paymentLabel_airtel'),
+        bank: document.getElementById('paymentLabel_bank')
+    };
+
+    // Reset all borders
+    Object.keys(labels).forEach(key => {
+        if (labels[key]) {
+            labels[key].classList.remove('border-2', 'border-brand-500', 'border-rose-500', 'border-blue-500');
+            labels[key].classList.add('border', 'border-slate-700');
+        }
+    });
+
+    // Highlight selected
+    const activeLabel = labels[val];
+    const noteText = document.getElementById('paymentInstructionsText');
+
+    if (val === 'momo') {
+        if (activeLabel) {
+            activeLabel.classList.remove('border', 'border-slate-700');
+            activeLabel.classList.add('border-2', 'border-brand-500');
+        }
+        if (noteText) noteText.textContent = "MTN MoMo payment code and number will be confirmed with your order via WhatsApp / SMS.";
+    } else if (val === 'airtel') {
+        if (activeLabel) {
+            activeLabel.classList.remove('border', 'border-slate-700');
+            activeLabel.classList.add('border-2', 'border-rose-500');
+        }
+        if (noteText) noteText.textContent = "Airtel Money payment number and details will be confirmed with your order via WhatsApp / SMS.";
+    } else if (val === 'bank') {
+        if (activeLabel) {
+            activeLabel.classList.remove('border', 'border-slate-700');
+            activeLabel.classList.add('border-2', 'border-blue-500');
+        }
+        if (noteText) noteText.textContent = "Bank transfer details (Bank name & Account number) will be provided for your transfer confirmation.";
+    }
+}
+
+function formatPaymentMethod(method) {
+    if (!method) return 'MTN Mobile Money';
+    const m = method.toLowerCase();
+    if (m === 'momo' || m.includes('mtn')) return 'MTN Mobile Money';
+    if (m === 'airtel') return 'Airtel Money';
+    if (m === 'bank') return 'Bank Transfer';
+    if (m === 'cod') return 'Cash on Delivery';
+    if (m === 'card') return 'Card / Online';
+    return method;
+}
+
 async function submitOrder(e) {
     e.preventDefault();
 
@@ -715,7 +766,7 @@ async function submitOrder(e) {
         address: document.getElementById('custAddress').value.trim(),
         city: document.getElementById('custCity').value.trim(),
         notes: document.getElementById('custNotes').value.trim(),
-        payment_method: document.querySelector('input[name="paymentMethod"]:checked').value,
+        payment_method: document.querySelector('input[name="paymentMethod"]:checked') ? document.querySelector('input[name="paymentMethod"]:checked').value : 'momo',
         coupon_code: activeCoupon ? activeCoupon.code : "",
         items: cart.map(item => ({
             id: item.id,
@@ -742,6 +793,10 @@ async function submitOrder(e) {
             // Populate Success Modal
             document.getElementById('successOrderCode').textContent = result.order_code;
             document.getElementById('successOrderTotal').textContent = fmt(result.total);
+            const succPaymentEl = document.getElementById('successPaymentMethod');
+            if (succPaymentEl) {
+                succPaymentEl.textContent = result.payment_method || formatPaymentMethod(orderPayload.payment_method);
+            }
 
             const waBtn = document.getElementById('successWhatsAppBtn');
             if (result.whatsapp_link) {
@@ -838,7 +893,7 @@ async function searchTrackOrder() {
                 <div class="border-t border-slate-800 pt-2 space-y-1 text-slate-300">
                     <div><strong class="text-white">Customer:</strong> ${order.customer_name}</div>
                     <div><strong class="text-white">Delivery to:</strong> ${order.address}, ${order.city}</div>
-                    <div><strong class="text-white">Total:</strong> ${fmt(order.total)} (${order.payment_method.toUpperCase()})</div>
+                    <div><strong class="text-white">Total:</strong> ${fmt(order.total)} <span class="text-xs text-amber-300 font-semibold">(${formatPaymentMethod(order.payment_method)})</span></div>
                 </div>
             </div>
         `;
