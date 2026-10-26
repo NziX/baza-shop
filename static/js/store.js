@@ -402,7 +402,12 @@ function updateCartUI() {
     const badge = document.getElementById('cartCountBadge');
     const drawerCount = document.getElementById('drawerCartCount');
 
-    if (badge) badge.textContent = totalCount;
+    if (badge) {
+        badge.textContent = totalCount;
+        badge.classList.remove('cart-badge-bounce');
+        void badge.offsetWidth;
+        badge.classList.add('cart-badge-bounce');
+    }
     if (drawerCount) drawerCount.textContent = `${totalCount} item${totalCount === 1 ? '' : 's'}`;
 
     const itemsContainer = document.getElementById('cartItemsContainer');

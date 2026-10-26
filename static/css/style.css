@@ -103,3 +103,114 @@
     color: #fb7185;
     border: 1px solid rgba(244, 63, 94, 0.3);
 }
+
+/* ======================================================== */
+/* 🌟 LUXURY MICRO-ANIMATIONS                               */
+/* ======================================================== */
+
+/* Track Order Button Styling & Glowing Radar */
+.btn-track-order {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #151922 0%, #1c2230 100%);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.1);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-track-order:hover {
+    border-color: #fbbf24;
+    background: linear-gradient(135deg, #1c2230 0%, #252d3f 100%);
+    box-shadow: 0 0 22px rgba(245, 158, 11, 0.35), inset 0 0 12px rgba(245, 158, 11, 0.12);
+    transform: translateY(-2px);
+}
+
+.btn-track-order:active {
+    transform: translateY(0) scale(0.97);
+}
+
+/* Shimmer beam passing through the Track button */
+.btn-track-order::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -100%;
+    width: 60%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(251, 191, 36, 0.35) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(30deg);
+    transition: all 0.8s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.btn-track-order:hover::after {
+    left: 140%;
+    opacity: 1;
+}
+
+/* Truck icon drive-forward animation on hover */
+.btn-track-order:hover .truck-icon {
+    animation: truckDrive 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes truckDrive {
+    0% {
+        transform: translateX(0) rotate(0deg);
+    }
+    50% {
+        transform: translateX(3px) rotate(-3deg);
+    }
+    100% {
+        transform: translateX(5px) rotate(1deg);
+    }
+}
+
+/* Cart Badge Pop Bounce */
+.cart-badge-bounce {
+    animation: cartBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes cartBounce {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.45);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Shimmer on primary CTA buttons */
+.btn-shimmer {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    transition: all 0.75s ease;
+}
+
+.btn-shimmer:hover::before {
+    left: 150%;
+}
