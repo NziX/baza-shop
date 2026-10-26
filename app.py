@@ -55,6 +55,10 @@ def admin_required(f):
 
 # ----------------- PAGE ROUTES ----------------- #
 
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok", "app": "Baza Shop"}), 200
+
 @app.route("/")
 def index():
     return render_template("index.html")
