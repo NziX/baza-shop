@@ -82,15 +82,6 @@ function togglePinVisibility() {
     initLucide();
 }
 
-function fillDefaultPin() {
-    const input = document.getElementById('adminPinInput');
-    if (input) {
-        input.value = 'admin123';
-        input.focus();
-        showAdminToast("Default PIN 'admin123' filled!");
-    }
-}
-
 async function handleAdminLogin(e) {
     e.preventDefault();
     const pin = document.getElementById('adminPinInput').value.trim();

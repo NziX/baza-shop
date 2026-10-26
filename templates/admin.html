@@ -60,17 +60,14 @@
                             id="adminPinInput" 
                             required 
                             autofocus
-                            placeholder="Type admin123" 
+                            placeholder="Enter your security PIN" 
                             class="w-full bg-[#1a1f2e] border border-slate-700 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500"
                         >
                         <button type="button" onclick="togglePinVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition" title="Show/Hide Password">
                             <i id="pinEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
                         </button>
                     </div>
-                    <div class="flex items-center justify-between text-[11px] mt-2">
-                        <span class="text-slate-400">
-                            Default: <button type="button" onclick="fillDefaultPin()" class="bg-amber-500/20 text-amber-300 font-bold px-1.5 py-0.5 rounded border border-amber-500/30 hover:bg-amber-500/40 transition cursor-pointer" title="Click to auto-fill">admin123</button>
-                        </span>
+                    <div class="flex items-center justify-end text-[11px] mt-2">
                         <button type="button" onclick="openResetPasswordModal()" class="text-amber-400 hover:text-amber-300 font-semibold underline underline-offset-2 transition">
                             Forgot PIN / Reset?
                         </button>
