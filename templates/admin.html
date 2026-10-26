@@ -147,6 +147,10 @@
                         <i data-lucide="tag" class="w-4 h-4"></i>
                         <span>Discount Coupons</span>
                     </button>
+                    <button onclick="switchTab('instagram')" id="tabBtn-instagram" class="admin-tab py-3 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition">
+                        <i data-lucide="instagram" class="w-4 h-4 text-pink-400"></i>
+                        <span>Instagram Feed</span>
+                    </button>
                     <button onclick="switchTab('settings')" id="tabBtn-settings" class="admin-tab py-3 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition">
                         <i data-lucide="settings" class="w-4 h-4"></i>
                         <span>Store Settings</span>
@@ -458,6 +462,41 @@
                             Save Store Settings
                         </button>
                     </form>
+                </div>
+            </div>
+
+            <!-- TAB 6: INSTAGRAM FEED MANAGEMENT -->
+            <div id="tabContent-instagram" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="instagram" class="w-5 h-5 text-pink-400"></i>
+                            <h3 class="font-display font-bold text-xl text-white">Instagram Feed Board</h3>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-0.5">Manage the 4 live showcase posts displayed on your storefront homepage. Update photos, links, and captions anytime.</p>
+                    </div>
+                    <a href="https://www.instagram.com/baza_shop2" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold text-xs shadow-md transition self-start sm:self-auto">
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                        <span>Visit @baza_shop2</span>
+                    </a>
+                </div>
+
+                <!-- Visual 4-Slot Grid -->
+                <div id="adminInstagramSlotsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Loaded dynamically via renderAdminInstagramPosts() -->
+                </div>
+
+                <!-- Quick Help / Instructions Card -->
+                <div class="bg-[#151924] border border-slate-800 rounded-2xl p-5 text-xs text-slate-400 space-y-2">
+                    <div class="flex items-center gap-2 text-white font-semibold">
+                        <i data-lucide="help-circle" class="w-4 h-4 text-amber-400"></i>
+                        <span>How to update your Instagram showcase:</span>
+                    </div>
+                    <ol class="list-decimal list-inside space-y-1.5 pl-1 text-slate-400 leading-relaxed">
+                        <li>Whenever you publish a new post or reel on Instagram, click <strong class="text-amber-400">"Update Slot"</strong> on whichever position (Slot 1, 2, 3, or 4) you want to replace.</li>
+                        <li>Upload your photo directly (or paste an image link) and paste your Instagram post URL (e.g. <code class="text-amber-300 bg-black/40 px-1 py-0.5 rounded">https://www.instagram.com/p/...</code>).</li>
+                        <li>Add an optional short caption or product title and click <strong class="text-emerald-400">"Save Slot"</strong>. Your website's board updates immediately!</li>
+                    </ol>
                 </div>
             </div>
         </main>
@@ -834,6 +873,86 @@
                 <div class="pt-2">
                     <button type="submit" id="changeSubmitBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-amber-600 hover:from-brand-400 hover:to-amber-500 text-white font-semibold text-xs shadow-lg shadow-brand-500/20 transition">
                         Update Password Now
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Instagram Post Slot Editor Modal -->
+    <div id="instagramPostModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-[#141824] border border-slate-700 rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative my-6">
+            <button onclick="closeEditInstagramModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center gap-2.5 mb-4">
+                <div class="w-9 h-9 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center">
+                    <i data-lucide="instagram" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h4 class="font-display font-bold text-lg text-white" id="instagramModalTitle">Edit Instagram Slot</h4>
+                    <p class="text-xs text-slate-400">Update photo, Instagram link, and caption</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleSaveInstagramPost(event)" class="space-y-4 text-xs">
+                <!-- Slot Selector -->
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Board Slot Position *</label>
+                    <select id="instaSlotNumber" required class="w-full bg-[#1b2130] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500 cursor-pointer">
+                        <option value="1">Slot 1 (Leftmost)</option>
+                        <option value="2">Slot 2</option>
+                        <option value="3">Slot 3</option>
+                        <option value="4">Slot 4 (Rightmost)</option>
+                    </select>
+                </div>
+
+                <!-- Image Upload or URL -->
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Post Photo / Image *</label>
+                    <div class="flex gap-2 mb-2">
+                        <input type="text" id="instaImageUrl" required placeholder="https://... or click Upload" class="flex-1 bg-[#1b2130] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500 placeholder-slate-500" oninput="previewInstagramImage(this.value)">
+                        <label class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold cursor-pointer border border-slate-700 flex items-center gap-1.5 transition whitespace-nowrap">
+                            <i data-lucide="upload" class="w-4 h-4 text-amber-400"></i>
+                            <span>Upload</span>
+                            <input type="file" id="instaImageFileInput" accept="image/*" class="hidden" onchange="handleInstagramImageUpload(event)">
+                        </label>
+                    </div>
+
+                    <!-- Live Image Preview -->
+                    <div class="relative w-full h-40 bg-[#10131c] rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
+                        <img id="instaImagePreview" src="" alt="Preview" class="w-full h-full object-cover hidden">
+                        <span id="instaImageEmpty" class="text-slate-500 text-xs flex items-center gap-1.5">
+                            <i data-lucide="image" class="w-4 h-4"></i> Image preview will appear here
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Instagram Post URL -->
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Instagram Post URL</label>
+                    <div class="relative">
+                        <i data-lucide="link" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                        <input type="url" id="instaPostUrl" placeholder="https://www.instagram.com/p/..." class="w-full bg-[#1b2130] border border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500 placeholder-slate-500">
+                    </div>
+                    <span class="text-[11px] text-slate-500 block mt-1">Direct link to the post on Instagram.</span>
+                </div>
+
+                <!-- Caption / Title -->
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">Caption / Short Description</label>
+                    <input type="text" id="instaCaption" placeholder="e.g. Modern Brass Chandelier in living room ✨" class="w-full bg-[#1b2130] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500 placeholder-slate-500">
+                </div>
+
+                <!-- Submit / Cancel -->
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                    <button type="button" onclick="closeEditInstagramModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">
+                        Cancel
+                    </button>
+                    <button type="submit" id="saveInstaBtn" class="px-5 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-amber-600 hover:from-pink-500 hover:to-amber-500 text-white font-semibold shadow-lg shadow-pink-500/20 transition flex items-center gap-1.5">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        <span>Save Slot</span>
                     </button>
                 </div>
             </form>

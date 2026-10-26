@@ -322,7 +322,7 @@ function switchTab(tabName) {
     currentAdminTab = tabName;
 
     // Hide all tab contents
-    const contents = ['dashboard', 'products', 'orders', 'coupons', 'settings'];
+    const contents = ['dashboard', 'products', 'orders', 'coupons', 'settings', 'instagram'];
     contents.forEach(t => {
         const el = document.getElementById(`tabContent-${t}`);
         const btn = document.getElementById(`tabBtn-${t}`);
@@ -347,6 +347,7 @@ function switchTab(tabName) {
     if (tabName === 'orders') loadAdminOrders();
     if (tabName === 'coupons') loadAdminCoupons();
     if (tabName === 'settings') loadAdminSettings();
+    if (tabName === 'instagram') loadAdminInstagramPosts();
 
     initLucide();
 }
@@ -1139,4 +1140,206 @@ function showAdminToast(message) {
         toast.classList.add('hidden');
         toast.classList.remove('flex');
     }, 3500);
+}
+
+// ------------------- INSTAGRAM FEED MANAGEMENT ------------------- //
+
+let adminInstagramPosts = [];
+
+async function loadAdminInstagramPosts() {
+    try {
+        const res = await fetch('/api/admin/instagram-posts');
+        if (!res.ok) {
+            if (res.status === 401) return showLoginModal();
+            return;
+        }
+        adminInstagramPosts = await res.json();
+        renderAdminInstagramPosts(adminInstagramPosts);
+    } catch (err) {
+        console.error("Error loading admin Instagram posts:", err);
+    }
+}
+
+function renderAdminInstagramPosts(posts) {
+    const container = document.getElementById('adminInstagramSlotsContainer');
+    if (!container) return;
+
+    const slotMap = {};
+    (posts || []).forEach(p => {
+        slotMap[p.slot_number] = p;
+    });
+
+    const slots = [1, 2, 3, 4];
+    container.innerHTML = slots.map(num => {
+        const p = slotMap[num] || {
+            slot_number: num,
+            image_url: 'https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=500',
+            post_url: 'https://www.instagram.com/baza_shop2',
+            caption: 'Featured Post'
+        };
+
+        const slotLabels = {
+            1: 'Slot 1 (Leftmost)',
+            2: 'Slot 2',
+            3: 'Slot 3',
+            4: 'Slot 4 (Rightmost)'
+        };
+
+        return `
+            <div class="bg-[#151924] border border-slate-800 rounded-2xl p-4 flex flex-col justify-between shadow-lg hover:border-slate-700 transition">
+                <div>
+                    <!-- Slot Header Badge -->
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="px-2.5 py-1 rounded-full bg-pink-500/20 text-pink-300 font-bold text-[11px] border border-pink-500/30 flex items-center gap-1.5">
+                            <i data-lucide="layout-grid" class="w-3 h-3"></i>
+                            ${slotLabels[num]}
+                        </span>
+                        <a href="${p.post_url}" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-pink-400 transition" title="View on Instagram">
+                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                        </a>
+                    </div>
+
+                    <!-- Image Thumbnail Preview -->
+                    <div class="relative rounded-xl overflow-hidden aspect-square border border-slate-700/80 mb-3 bg-black/40 group">
+                        <img src="${p.image_url}" alt="Slot ${num}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center p-2 text-center text-[11px] text-white">
+                            ${p.caption || 'No caption'}
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="space-y-1 mb-4">
+                        <div class="font-bold text-white text-xs truncate" title="${p.caption || 'No caption set'}">
+                            ${p.caption || '<span class="text-slate-500 italic">No caption set</span>'}
+                        </div>
+                        <div class="text-[10px] text-slate-400 truncate font-mono">
+                            ${p.post_url}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Update Slot Button -->
+                <button onclick="openEditInstagramModal(${num})" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold text-xs border border-slate-700 transition flex items-center justify-center gap-1.5 cursor-pointer">
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5 text-amber-400"></i>
+                    <span>Update Slot ${num}</span>
+                </button>
+            </div>
+        `;
+    }).join('');
+
+    initLucide();
+}
+
+function openEditInstagramModal(slotNumber) {
+    const p = (adminInstagramPosts || []).find(x => x.slot_number === slotNumber) || {};
+
+    document.getElementById('instagramModalTitle').textContent = `Edit Instagram Slot #${slotNumber}`;
+    document.getElementById('instaSlotNumber').value = slotNumber;
+    document.getElementById('instaImageUrl').value = p.image_url || '';
+    document.getElementById('instaPostUrl').value = p.post_url || 'https://www.instagram.com/baza_shop2';
+    document.getElementById('instaCaption').value = p.caption || '';
+
+    previewInstagramImage(p.image_url || '');
+
+    document.getElementById('instagramPostModal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    initLucide();
+}
+
+function closeEditInstagramModal() {
+    document.getElementById('instagramPostModal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+}
+
+function previewInstagramImage(url) {
+    const preview = document.getElementById('instaImagePreview');
+    const empty = document.getElementById('instaImageEmpty');
+    if (!preview || !empty) return;
+
+    if (url && url.trim().length > 5) {
+        preview.src = url.trim();
+        preview.classList.remove('hidden');
+        empty.classList.add('hidden');
+        preview.onerror = () => {
+            preview.classList.add('hidden');
+            empty.classList.remove('hidden');
+        };
+    } else {
+        preview.classList.add('hidden');
+        empty.classList.remove('hidden');
+    }
+}
+
+async function handleInstagramImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    showAdminToast("Uploading image...");
+
+    try {
+        const res = await fetch('/api/admin/upload', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (data.success && data.image_url) {
+            document.getElementById('instaImageUrl').value = data.image_url;
+            previewInstagramImage(data.image_url);
+            showAdminToast("Photo uploaded successfully!");
+        } else {
+            alert(data.error || "Upload failed");
+        }
+    } catch (err) {
+        console.error("Upload error:", err);
+        alert("Failed to upload image. Please try again.");
+    }
+}
+
+async function handleSaveInstagramPost(e) {
+    e.preventDefault();
+
+    const slotNumber = parseInt(document.getElementById('instaSlotNumber').value);
+    const imageUrl = document.getElementById('instaImageUrl').value.trim();
+    const postUrl = document.getElementById('instaPostUrl').value.trim() || 'https://www.instagram.com/baza_shop2';
+    const caption = document.getElementById('instaCaption').value.trim();
+
+    if (!imageUrl) {
+        alert("Please provide an image URL or upload a photo.");
+        return;
+    }
+
+    const btn = document.getElementById('saveInstaBtn');
+    btn.disabled = true;
+    btn.innerHTML = `<span>Saving...</span>`;
+
+    try {
+        const res = await fetch(`/api/admin/instagram-posts/${slotNumber}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                image_url: imageUrl,
+                post_url: postUrl,
+                caption: caption
+            })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+            showAdminToast(`Slot #${slotNumber} updated successfully!`);
+            closeEditInstagramModal();
+            loadAdminInstagramPosts();
+        } else {
+            alert(data.error || "Failed to update slot.");
+        }
+    } catch (err) {
+        console.error("Error saving Instagram post:", err);
+        alert("An error occurred while saving the post.");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span>Save Slot</span>`;
+        initLucide();
+    }
 }

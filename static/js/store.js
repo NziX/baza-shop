@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initLucide();
     loadStoreSettings();
     loadCategories();
+    loadInstagramFeed();
     fetchProducts();
     updateCartUI();
 
@@ -104,6 +105,35 @@ async function loadStoreSettings() {
         }
     } catch (err) {
         console.error("Error loading store info:", err);
+    }
+}
+
+async function loadInstagramFeed() {
+    try {
+        const res = await fetch('/api/instagram-posts');
+        if (!res.ok) return;
+        const posts = await res.json();
+        if (!posts || posts.length === 0) return;
+
+        const grid = document.getElementById('instagramFeedGrid');
+        if (!grid) return;
+
+        grid.innerHTML = posts.map(p => `
+            <div class="relative group rounded-xl overflow-hidden aspect-square border border-slate-800 bg-[#161a24] shadow-md">
+                <img src="${p.image_url}" alt="${p.caption || 'Baza Shop Instagram'}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <a href="${p.post_url || 'https://www.instagram.com/baza_shop2'}" target="_blank" rel="noopener noreferrer" class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center text-white p-3 text-center gap-1.5">
+                    <div class="w-8 h-8 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center mb-1 shadow-md">
+                        <i data-lucide="instagram" class="w-4 h-4"></i>
+                    </div>
+                    <span class="text-xs font-bold line-clamp-2">${p.caption || 'View on Instagram'}</span>
+                    <span class="text-[10px] text-pink-300 font-semibold underline underline-offset-2">View Post →</span>
+                </a>
+            </div>
+        `).join('');
+
+        initLucide();
+    } catch (err) {
+        console.error("Error loading Instagram feed:", err);
     }
 }
 

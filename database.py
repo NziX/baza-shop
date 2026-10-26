@@ -103,13 +103,40 @@ def init_db():
     );
     """)
 
+    # Create instagram_posts table (4 showcase slots on homepage)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS instagram_posts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        slot_number INTEGER UNIQUE NOT NULL,
+        image_url TEXT NOT NULL,
+        post_url TEXT NOT NULL DEFAULT 'https://www.instagram.com/baza_shop2',
+        caption TEXT DEFAULT '',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    """)
+
     conn.commit()
 
     # Ensure baseline store configuration exists without touching or adding any products/orders/reviews
     init_default_settings(cursor)
+    init_default_instagram_posts(cursor)
     conn.commit()
 
     conn.close()
+
+def init_default_instagram_posts(cursor):
+    """
+    Initializes the 4 default Instagram showcase slots if not already present.
+    """
+    existing = cursor.execute("SELECT COUNT(*) FROM instagram_posts").fetchone()[0]
+    if existing == 0:
+        default_posts = [
+            (1, "https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=500&auto=format&fit=crop&q=80", "https://www.instagram.com/baza_shop2", "Modern Brass Pendant Lighting"),
+            (2, "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500&auto=format&fit=crop&q=80", "https://www.instagram.com/baza_shop2", "Minimalist Matte Black Floor Lamp"),
+            (3, "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?w=500&auto=format&fit=crop&q=80", "https://www.instagram.com/baza_shop2", "Cozy Corner Accent Decor"),
+            (4, "https://images.unsplash.com/photo-1616046229478-9901c5536a45?w=500&auto=format&fit=crop&q=80", "https://www.instagram.com/baza_shop2", "Aesthetic Living Space Styling")
+        ]
+        cursor.executemany("INSERT INTO instagram_posts (slot_number, image_url, post_url, caption) VALUES (?, ?, ?, ?)", default_posts)
 
 def init_default_settings(cursor):
     """

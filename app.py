@@ -662,5 +662,57 @@ def admin_settings():
 
     return jsonify({"success": True, "message": "Settings updated successfully!"})
 
+# ----------------- INSTAGRAM FEED API ----------------- #
+
+@app.route("/api/instagram-posts", methods=["GET"])
+def get_instagram_posts():
+    """Returns the 4 featured Instagram showcase posts for the storefront board."""
+    conn = get_db_connection()
+    rows = conn.execute("SELECT * FROM instagram_posts ORDER BY slot_number ASC LIMIT 4").fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
+
+@app.route("/api/admin/instagram-posts", methods=["GET"])
+@admin_required
+def admin_get_instagram_posts():
+    """Admin endpoint to get all 4 Instagram showcase slots."""
+    conn = get_db_connection()
+    rows = conn.execute("SELECT * FROM instagram_posts ORDER BY slot_number ASC").fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
+
+@app.route("/api/admin/instagram-posts/<int:slot_number>", methods=["POST"])
+@admin_required
+def admin_update_instagram_post(slot_number):
+    """Admin endpoint to update a specific Instagram showcase slot (1 to 4)."""
+    if slot_number < 1 or slot_number > 4:
+        return jsonify({"error": "Slot number must be between 1 and 4."}), 400
+
+    data = request.json or {}
+    image_url = data.get("image_url", "").strip()
+    post_url = data.get("post_url", "").strip() or "https://www.instagram.com/baza_shop2"
+    caption = data.get("caption", "").strip()
+
+    if not image_url:
+        return jsonify({"error": "Please provide an image URL or upload an image."}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO instagram_posts (slot_number, image_url, post_url, caption)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(slot_number) DO UPDATE SET
+            image_url = excluded.image_url,
+            post_url = excluded.post_url,
+            caption = excluded.caption
+    """, (slot_number, image_url, post_url, caption))
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "success": True, 
+        "message": f"Instagram Slot #{slot_number} updated successfully!"
+    })
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)
