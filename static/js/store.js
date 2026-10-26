@@ -293,7 +293,7 @@ function updateHeroFeaturedCard(products) {
                 <span class="px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-1">OFFICIAL INSTAGRAM SHOP</span>
                 <h3 class="font-display text-2xl font-extrabold text-white">Baza Shop</h3>
                 <p class="text-[11px] text-amber-300 font-bold uppercase tracking-wider mb-2">JUST ASK</p>
-                <p class="text-xs text-slate-400 max-w-xs leading-relaxed mb-6">Modern lighting fixtures, smart ambient lamps & curated home decor.</p>
+                <p class="text-xs text-slate-400 max-w-xs leading-relaxed mb-6">Quality products for every need, available at Baza Shop.</p>
                 <a href="https://www.instagram.com/${storeSettings.instagram_handle || 'baza_shop2'}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 via-rose-600 to-amber-600 text-white text-xs font-bold shadow-lg hover:opacity-95 transition flex items-center gap-2.5 group">
                     <img src="/static/images/baza-logo.png" alt="Baza Shop" class="w-5 h-5 rounded-full object-cover group-hover:scale-110 transition-transform">
                     <i data-lucide="instagram" class="w-4 h-4"></i>

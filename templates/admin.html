@@ -257,7 +257,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <h3 class="font-display font-bold text-xl text-white">Product Inventory</h3>
-                        <p class="text-xs text-slate-400">Add, edit, and organize lighting & decor products</p>
+                        <p class="text-xs text-slate-400">Add, edit, and organize store products</p>
                     </div>
 
                     <button onclick="openProductEditor()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-amber-600 hover:from-brand-400 hover:to-amber-500 text-white font-semibold text-xs transition flex items-center gap-2 shadow-lg shadow-brand-500/20">
@@ -519,20 +519,20 @@
 
                 <div>
                     <label class="block text-slate-300 font-semibold mb-1">Product Title *</label>
-                    <input type="text" id="prodName" required placeholder="e.g. Modern Ambient Lamp" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500">
+                    <input type="text" id="prodName" required placeholder="e.g. Wireless Bluetooth Speaker" class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-slate-300 font-semibold mb-1">Category *</label>
                         <select id="prodCategory" required class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-brand-500">
-                            <option value="Chandeliers">Chandeliers</option>
-                            <option value="Floor Lamps">Floor Lamps</option>
-                            <option value="Pendant Lights">Pendant Lights</option>
-                            <option value="Table Lamps">Table Lamps</option>
-                            <option value="Decor Lighting">Decor Lighting</option>
-                            <option value="Home Decor">Home Decor</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Fashion & Clothing">Fashion & Clothing</option>
+                            <option value="Home & Kitchen">Home & Kitchen</option>
+                            <option value="Beauty & Personal Care">Beauty & Personal Care</option>
                             <option value="Accessories">Accessories</option>
+                            <option value="General Products">General Products</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                     <div>
@@ -639,7 +639,7 @@
 
                 <div>
                     <label class="block text-slate-300 font-semibold mb-1">Description</label>
-                    <textarea id="prodDesc" rows="3" placeholder="Describe the design, lighting warmth, and materials..." class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-brand-500"></textarea>
+                    <textarea id="prodDesc" rows="3" placeholder="Describe the product features, specifications, and details..." class="w-full bg-[#1c2230] border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-brand-500"></textarea>
                 </div>
 
                 <!-- Badges -->
@@ -942,7 +942,7 @@
                 <!-- Caption / Title -->
                 <div>
                     <label class="block text-slate-300 font-semibold mb-1">Caption / Short Description</label>
-                    <input type="text" id="instaCaption" placeholder="e.g. Modern Brass Chandelier in living room ✨" class="w-full bg-[#1b2130] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500 placeholder-slate-500">
+                    <input type="text" id="instaCaption" placeholder="e.g. New arrivals in store now! ✨" class="w-full bg-[#1b2130] border border-slate-700 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-500 placeholder-slate-500">
                 </div>
 
                 <!-- Submit / Cancel -->

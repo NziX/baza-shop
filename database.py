@@ -145,14 +145,14 @@ def init_default_settings(cursor):
     """
     default_settings = [
         ("store_name", "Baza Shop"),
-        ("store_tagline", "Curated Modern Lighting & Premium Home Aesthetics"),
+        ("store_tagline", "Your Trusted Everyday Online Store"),
         ("instagram_handle", "baza_shop2"),
         ("instagram_url", "https://www.instagram.com/baza_shop2"),
         ("whatsapp_number", ""),
         ("currency_symbol", "RWF"),
         ("delivery_fee", "3000"),
         ("free_shipping_threshold", "75000"),
-        ("announcement_text", "✨ Welcome to Baza Shop! Explore modern lighting & premium decor."),
+        ("announcement_text", "✨ Welcome to Baza Shop! Discover a wide range of quality products."),
         ("admin_pin", "123456"),
         ("recovery_key", "BAZA-RESET-2026")
     ]
