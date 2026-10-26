@@ -257,14 +257,15 @@ function updateHeroFeaturedCard(products) {
     if (!featured) {
         card.innerHTML = `
             <div class="w-full h-[400px] bg-gradient-to-br from-[#1a1f2c] via-[#121622] to-[#0d1017] flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
-                <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500/20 to-brand-500/30 border border-amber-500/30 flex items-center justify-center mb-5 shadow-xl shadow-brand-500/10 p-2">
-                    <img src="/static/images/baza-logo.svg" alt="Baza Shop Logo" class="w-full h-full rounded-xl">
+                <div class="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-amber-500 via-pink-500 to-purple-600 flex items-center justify-center mb-3 shadow-xl shadow-pink-500/20">
+                    <img src="/static/images/baza-logo.png" alt="Baza Shop Logo" class="w-full h-full rounded-full object-cover bg-white">
                 </div>
-                <span class="px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-2">OFFICIAL INSTAGRAM SHOP</span>
-                <h3 class="font-display text-2xl font-extrabold text-white mb-2">Baza Shop</h3>
+                <span class="px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-1">OFFICIAL INSTAGRAM SHOP</span>
+                <h3 class="font-display text-2xl font-extrabold text-white">Baza Shop</h3>
+                <p class="text-[11px] text-amber-300 font-bold uppercase tracking-wider mb-2">JUST ASK</p>
                 <p class="text-xs text-slate-400 max-w-xs leading-relaxed mb-6">Modern lighting fixtures, smart ambient lamps & curated home decor.</p>
                 <a href="https://www.instagram.com/${storeSettings.instagram_handle || 'baza_shop2'}" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 via-rose-600 to-amber-600 text-white text-xs font-bold shadow-lg hover:opacity-95 transition flex items-center gap-2.5 group">
-                    <img src="/static/images/baza-logo.svg" alt="Baza Shop Logo" class="w-4 h-4 rounded-sm group-hover:scale-110 transition-transform">
+                    <img src="/static/images/baza-logo.png" alt="Baza Shop" class="w-5 h-5 rounded-full object-cover group-hover:scale-110 transition-transform">
                     <i data-lucide="instagram" class="w-4 h-4"></i>
                     <span>Follow @${storeSettings.instagram_handle || 'baza_shop2'}</span>
                 </a>
